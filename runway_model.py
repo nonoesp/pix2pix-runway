@@ -38,21 +38,22 @@
 # `pip install runway-python`.
 import runway
 from runway.data_types import number, text, image
-from example_model import ExampleModel
+from pix2pix_model import Pix2Pix
 
 # Setup the model, initialize weights, set the configs of the model, etc.
 # Every model will have a different set of configurations and requirements.
 # Check https://docs.runwayapp.ai/#/python-sdk to see a complete list of
 # supported configs. The setup function should return the model ready to be
 # used.
-setup_options = {
-    'seed': number(min=0, max=1000000, description='A seed used to initialize the model.')
-}
+
+setup_options = {'checkpoint': runway.file(extension='.h5')}
+
 @runway.setup(options=setup_options)
 def setup(opts):
-    msg = '[SETUP] Ran with options: seed = {}'
-    print(msg.format(opts['seed']))
-    model = ExampleModel(opts)
+    # msg = '[SETUP] Ran with options: seed = {}'
+    # print(msg.format(opts['seed']))
+    # checkpoint_path = opts['checkpoint']
+    model = Pix2Pix(opts)
     return model
 
 # Every model needs to have at least one command. Every command allows to send
@@ -61,7 +62,7 @@ def setup(opts):
 @runway.command(name='generate',
                 inputs={ 'input_image': image() },
                 outputs={ 'output_image': image() },
-                description='Generates a red square when the input text input is "red".')
+                description='Generates a predicted floor plan layout given an input shape')
 def generate(model, args):
     # Generate a PIL or Numpy image based on the input caption, and return it
     output_image = model.run_on_input(args['input_image'])

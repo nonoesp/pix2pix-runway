@@ -23,27 +23,22 @@
 import random
 import tensorflow as tf
 import numpy as np
-import cv2
 from PIL import Image
-from object_detection.utils import visualization_utils as vis_util
 import os
 import base64
 
-class ExampleModel():
+class Pix2Pix():
 
     def __init__(self, options):
-        random.seed(options['seed'])
-        self.model = tf.keras.models.load_model('generator_model_002_epochs_200.h5')
-        # self.model = loaded.signatures['serving_default']
+        checkpoint_path = options['checkpoint']
 
-    # def data_uri_to_cv2_img(self, uri):
-    #     print(uri)
-    #     encoded_data = uri.split(',')[1]
-    #     nparr = np.fromstring(encoded_data.decode('base64'), np.uint8)
-    #     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    #     return img
+        if checkpoint_path is not None: 
+            self.model = tf.keras.models.load_model(checkpoint_path)
+        else:
+            self.model = tf.keras.models.load_model('generator_model_002_epochs_200.h5')
 
-    # Generate an image based on some text.
+
+    # Generate an image based on a 256 by 256 input shape:
     def run_on_input(self, input_image):
 
         # TODO: image as array -> tensor
@@ -56,6 +51,6 @@ class ExampleModel():
 
         output_image = prediction[0] # -> (256, 256, 3)
 
-        image_as_pil = tf.keras.preprocessing.image.array_to_img(output_image)
-        # image_as_pil = Image.fromarray(prediction[0])
+        # TODO: Fix image styling issues - returned predictions look desaturated
+        image_as_pil = tf.keras.preprocessing.image.array_to_img(output_image)    
         return image_as_pil
