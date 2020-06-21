@@ -35,15 +35,11 @@ class Pix2Pix():
         if checkpoint_path is not None: 
             self.model = tf.keras.models.load_model(checkpoint_path)
         else:
-            self.model = tf.keras.models.load_model('generator_model_002_epochs_200.h5')
+            self.model = tf.keras.models.load_model('generator_model_003_061720.h5')
 
 
     # Generate an image based on a 256 by 256 input shape:
     def run_on_input(self, input_image):
-
-        # TODO: image as array -> tensor
-        # resize to 256x256
-        
         input_image_processed = tf.image.convert_image_dtype(np.array(input_image), tf.float32)
         input_image_processed = tf.image.resize(input_image_processed, (256, 256), antialias=True)
         input_image_processed = tf.expand_dims(input_image_processed, axis=[0]) # (1, 256, 256, 3)
@@ -51,6 +47,12 @@ class Pix2Pix():
 
         output_image = prediction[0] # -> (256, 256, 3)
 
-        # TODO: Fix image styling issues - returned predictions look desaturated
-        image_as_pil = tf.keras.preprocessing.image.array_to_img(output_image)    
-        return image_as_pil
+        array_from_tensor = np.asarray(output_image)
+
+        # Remap the pixel values from float values to integer values
+        mapped_array = np.interp(array_from_tensor, (0, +1), (0, +255))
+
+        # Construct a PIL image to display in Runway
+        PIL_IMG = Image.fromarray(np.uint8(mapped_array))
+
+        return PIL_IMG

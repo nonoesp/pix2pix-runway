@@ -50,9 +50,6 @@ setup_options = {'checkpoint': runway.file(extension='.h5')}
 
 @runway.setup(options=setup_options)
 def setup(opts):
-    # msg = '[SETUP] Ran with options: seed = {}'
-    # print(msg.format(opts['seed']))
-    # checkpoint_path = opts['checkpoint']
     model = Pix2Pix(opts)
     return model
 
@@ -62,9 +59,9 @@ def setup(opts):
 @runway.command(name='generate',
                 inputs={ 'input_image': image() },
                 outputs={ 'output_image': image() },
-                description='Generates a predicted floor plan layout given an input shape')
+                description='Generates a predicted image based on the given input image.')
 def generate(model, args):
-    # Generate a PIL or Numpy image based on the input caption, and return it
+    # Generate an output image based on the input image, and return it
     output_image = model.run_on_input(args['input_image'])
     return {
         'output_image': output_image
