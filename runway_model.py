@@ -60,6 +60,7 @@ def setup(opts):
                 inputs={ 'input_image': image() },
                 outputs={ 'output_image': image() },
                 description='Generates a predicted image based on the given input image.')
+
 def generate(model, args):
     # Generate an output image based on the input image, and return it
     output_image = model.run_on_input(args['input_image'])
@@ -70,8 +71,9 @@ def generate(model, args):
 if __name__ == '__main__':
     # run the model server using the default network interface and ports,
     # displayed here for convenience
-    print("Running..")
-    runway.run(host='0.0.0.0', port=8000, debug=True)
+    port=8000
+    print(f"Running on port {port}..")
+    runway.run(port=port)
 
 ## Now that the model is running, open a new terminal and give it a command to
 ## generate an image. It will respond with a base64 encoded URI
