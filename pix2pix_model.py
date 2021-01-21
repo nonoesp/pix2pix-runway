@@ -26,33 +26,44 @@ import numpy as np
 from PIL import Image
 import os
 import base64
+from datetime import datetime
 
 class Pix2Pix():
 
     def __init__(self, options):
         checkpoint_path = options['checkpoint']
-
+        print(checkpoint_path)
         if checkpoint_path is not None: 
             self.model = tf.keras.models.load_model(checkpoint_path)
         else:
-            self.model = tf.keras.models.load_model('generator_model_003_061720.h5')
+            self.model = tf.keras.models.load_model('210121_001707_edges2daisies_tf-2.4.0@199.h5')
 
 
     # Generate an image based on a 256 by 256 input shape:
     def run_on_input(self, input_image):
-        input_image_processed = tf.image.convert_image_dtype(np.array(input_image), tf.float32)
-        input_image_processed = tf.image.resize(input_image_processed, (256, 256), antialias=True)
-        input_image_processed = tf.expand_dims(input_image_processed, axis=[0]) # (1, 256, 256, 3)
-        prediction = self.model(input_image_processed, training=True)
 
-        output_image = prediction[0] # -> (256, 256, 3)
-
-        array_from_tensor = np.asarray(output_image)
-
-        # Remap the pixel values from float values to integer values
-        mapped_array = np.interp(array_from_tensor, (0, +1), (0, +255))
+        # Get current date and set save folder
+        # now = datetime.today().strftime('%y%m%d_%H%M%S%f') 
+        
+        # ↓
+        # Pre-processing input
+        img_in = tf.image.convert_image_dtype(np.array(input_image), tf.float32)
+        img_in = tf.image.resize(img_in, (256, 256), antialias=True)
+        img_in = tf.expand_dims(img_in, axis=[0]) # (1, 256, 256, 3)
+        # ↓
+        # Predict
+        prediction = self.model(img_in, training=True)
+        # ↓
+        # Remap output from (-1.0, +1.0) to (0, 255)
+        img_out = prediction[0] # -> (256, 256, 3)
+        img_out = (img_out * 0.5 + 0.5) * 255.0
+        img_out = tf.cast(img_out, tf.uint8)
 
         # Construct a PIL image to display in Runway
-        PIL_IMG = Image.fromarray(np.uint8(mapped_array))
+        output_image = Image.fromarray(np.array(img_out))
 
-        return PIL_IMG
+        # Save input and out images to disk
+        # input_image.save(f'/Users/nono/repos/Live/16/outputs/inbox/{now}-in.jpg')        
+        # output_image.save(f'/Users/nono/repos/Live/16/outputs/inbox/{now}-out.jpg')
+
+        return output_image
