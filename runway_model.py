@@ -1,6 +1,7 @@
 # MIT License
 
 # Copyright (c) 2019 Runway AI, Inc
+# Copyright (c) 2020–2024 Nono Martínez Alonso, for the edited portions
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +40,7 @@
 import runway
 from runway.data_types import number, text, image
 from pix2pix_model import Pix2Pix
+import argparse
 
 # Setup the model, initialize weights, set the configs of the model, etc.
 # Every model will have a different set of configurations and requirements.
@@ -69,15 +71,28 @@ def generate(model, args):
     }
 
 if __name__ == '__main__':
-    # run the model server using the default network interface and ports,
-    # displayed here for convenience
+
+    parser = argparse.ArgumentParser(
+        description='Predict Pix2Pix for a given input image.')
+    parser.add_argument(
+        '-m',
+        '--model',
+        type=str,
+        default=None,
+        help='Path to Pix2Pix model, e.g., edges2daisies.h5.',
+    )
+
+    opt = parser.parse_args()
+
+    # Run the model server using the default network interface and ports,
+    # displayed here for convenience.
     port=8000
     print(f"Running on port {port}..")
-    runway.run(port=port)
+    runway.run(port=port, model_options={'checkpoint': opt.model})
 
-## Now that the model is running, open a new terminal and give it a command to
-## generate an image. It will respond with a base64 encoded URI
-# curl \
-#   -H "content-type: application/json" \
-#   -d '{ "caption": "red" }' \
-#   localhost:8000/generate
+    ## Now that the model is running, open a new terminal and give it a command to
+    ## generate an image. It will respond with a base64 encoded URI
+    # curl \
+    #   -H "content-type: application/json" \
+    #   -d '{ "caption": "red" }' \
+    #   localhost:8000/generate
