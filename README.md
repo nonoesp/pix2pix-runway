@@ -1,3 +1,33 @@
+# Pix2Pix Runway Model
+
+You can use this server with [pix2pix.glitch.me](https://pix2pix.glitch.me/) to interact with Pix2Pix models in real time.
+
+## Python environment
+
+Create a Python 3.8 environment.
+
+```sh
+conda create -n runway38 -y python=3.8
+```
+
+```sh
+conda activate runway38
+pip install runway-python
+```
+
+## Server model locally
+
+```sh
+python runway_model.py -m edges2daisies.h5
+# Starting model server at http://0.0.0.0:8000...
+```
+
+## Predict on individual images
+
+```sh
+python predict.py -m edges2daisies.h5 -i input.png -o output.png
+```
+
 # Runway Model Template
 
 [![RunwayML Badge](https://open-app.runwayml.com/gh-badge.svg)](https://open-app.runwayml.com/)
